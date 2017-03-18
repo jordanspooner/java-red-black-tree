@@ -45,23 +45,62 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
   }
 
   private void insertCaseOne(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 1");
+    if (current == root) {
+      current.setBlack();
+    } else {
+      insertCaseTwo(current);
+    }
   }
 
   private void insertCaseTwo(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 2");
+    if (current.getParent().isRed()) {
+      insertCaseThree(current);
+    }
   }
 
   private void insertCaseThree(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 3");
+    if (current.getUncle() != null && current.getUncle().isRed()) {
+      current.getParent().setBlack();
+      current.getUncle().setBlack();
+      current.getGrandparent().setRed();
+      insertCaseOne(current.getGrandparent());
+    } else {
+      insertCaseFour(current);
+    }
   }
 
   private void insertCaseFour(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 4");
+    if (current.getParent().isLeftChild() && current.isRightChild()) {
+      Node<K,V> parent = current.getParent();
+      current.getParent().rotateLeft();
+      insertCaseFive(parent);
+    } else if (current.getParent().isRightChild() && current.isLeftChild()) {
+      Node<K,V> parent = current.getParent();
+      current.getParent().rotateRight();
+      insertCaseFive(parent);
+    } else {
+      insertCaseFive(current);
+    }
   }
 
   private void insertCaseFive(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 5");
+    boolean grandparentIsRoot = false;
+    Node<K, V> possibleNewRoot;
+    if (current.getGrandparent() == root) {
+      grandparentIsRoot = true;
+    }
+    if (current.isLeftChild()) {
+      current.getParent().setBlack();
+      current.getGrandparent().setRed();
+      possibleNewRoot = current.getGrandparent().rotateRight();
+    } else {
+      current.getParent().setBlack();
+      current.getGrandparent().setRed();
+      possibleNewRoot = current.getGrandparent().rotateLeft();
+    }
+    if (grandparentIsRoot) {
+      root = possibleNewRoot;
+    }
   }
 
   private Tuple<Node<K, V>, Node<K, V>> findNode(K key) {
